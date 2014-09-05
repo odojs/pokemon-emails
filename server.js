@@ -23,16 +23,20 @@
 
   console.log();
 
-  display = function(success, conn) {
+  display = function(success, conn, err) {
     var msg;
     msg = "From:  " + conn.from + "\n   To:    " + conn.to;
     if (conn.forwardto != null) {
       msg += "\n   Proxy: " + conn.forwardto;
     }
     if (success) {
-      return console.log((" √ " + msg).green);
+      return console.log((" √ " + msg + "\n").green);
     }
-    return console.error((" X " + msg).red);
+    console.error((" X " + msg).red);
+    if (err != null) {
+      console.error(("   Error: " + err).red);
+    }
+    return console.error();
   };
 
   server.on('startData', function(conn) {
@@ -54,8 +58,7 @@
       if (err == null) {
         display(true, conn);
       } else {
-        display(false, conn);
-        console.error(("   Error: " + err).red);
+        display(false, conn, err);
       }
       return conn.cb(err, message);
     });
@@ -70,8 +73,7 @@
 
   server.on('dataReady', function(conn, cb) {
     if ((conn.deny != null) && conn.deny) {
-      display(false, conn);
-      console.error("   Error: proxy denied".red);
+      display(false, conn, 'proxy denied');
       return cb(new Error('denied'));
     }
     conn.saveStream.end();

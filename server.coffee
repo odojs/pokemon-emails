@@ -11,12 +11,14 @@ console.log()
 console.log '   Pokemon Emails listening on port 25'.cyan
 console.log()
 
-display = (success, conn) ->
+display = (success, conn, err) ->
   msg = "From:  #{conn.from}\n   To:    #{conn.to}"
   msg += "\n   Proxy: #{conn.forwardto}" if conn.forwardto?
   
-  return console.log " √ #{msg}".green if success
+  return console.log " √ #{msg}\n".green if success
   console.error " X #{msg}".red
+  console.error "   Error: #{err}".red if err?
+  console.error()
 
 server.on 'startData', (conn) ->
   if conn.to.length isnt 1
@@ -33,8 +35,7 @@ server.on 'startData', (conn) ->
     if !err?
       display yes, conn
     else
-      display no, conn
-      console.error "   Error: #{err}".red
+      display no, conn, err
     conn.cb err, message
 
 server.on 'data', (conn, chunk) ->
@@ -43,8 +44,7 @@ server.on 'data', (conn, chunk) ->
 
 server.on 'dataReady', (conn, cb) ->
   if conn.deny? and conn.deny
-    display no, conn
-    console.error "   Error: proxy denied".red
+    display no, conn, 'proxy denied'
     return cb new Error 'denied' 
   conn.saveStream.end()
   conn.cb = cb
