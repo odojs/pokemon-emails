@@ -1,0 +1,6 @@
+{
+	"hosts": [
+		"example.com"
+	],
+	"forwardto": "example@gmail.com"
+}

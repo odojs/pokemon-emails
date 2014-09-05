@@ -1,0 +1,14 @@
+{
+  "name": "mmmail",
+  "version": "0.0.0",
+  "description": "MM Mail Me",
+  "main": "server.js",
+  "dependencies": {
+    "colors": "0.6.2",
+    "moment": "^2.8.3",
+    "simplesmtp": "0.3.32"
+  },
+  "devDependencies": {},
+  "author": "Thomas Coats",
+  "license": "MIT"
+}
