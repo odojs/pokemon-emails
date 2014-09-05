@@ -4,9 +4,9 @@
 
   args = process.argv.slice(2);
 
-  usage = "\nUsage: " + 'node client.js'.cyan + " \"To Name <toaddress@example.com>\" \"From Name <fromaddress@example.com>\" \"Test Subject\" \"Test Content\"\n";
+  usage = "\nUsage: " + 'node client.js'.cyan + " \"To Name <toaddress@example.com>\" \"From Name <fromaddress@example.com>\" \"Test Subject\" \"Test Content\" localhost\n";
 
-  if (args.length !== 4) {
+  if (args.length !== 5) {
     console.error(usage);
     process.exit(1);
   }
@@ -25,14 +25,15 @@
     to: args[0],
     from: args[1],
     subject: args[2],
-    content: args[3]
+    content: args[3],
+    host: args[4]
   };
 
   email.toaddress = email.to.split('<')[1].split('>')[0];
 
   email.fromaddress = email.from.split('<')[1].split('>')[0];
 
-  deliveremail.direct(email.toaddress, email.fromaddress, 'localhost', content, function(err, message) {
+  deliveremail.direct(email.toaddress, email.fromaddress, email.host, content, function(err, message) {
     if (err != null) {
       throw err;
     }

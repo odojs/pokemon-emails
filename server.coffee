@@ -5,6 +5,7 @@ os = require 'os'
 require 'colors'
 config = require './config.json'
 deliveremail = require './deliveremail'
+dns = require 'dns'
 
 server = simplesmtp.createServer()
 server.listen 25
@@ -14,6 +15,7 @@ for name, details of os.networkInterfaces()
   for detail in details
     if detail.family is 'IPv4' and !detail.internal
       ip = detail.address
+hostname = os.hostname()
 
 console.log()
 console.log "   Pokemon Emails listening on port 25 at #{ip}".cyan
@@ -21,7 +23,9 @@ console.log()
 
 display = (success, conn, err) ->
   msg = "From:  #{conn.from}\n   To:    #{conn.to}"
+  
   msg += "\n   Proxy: #{conn.forwardto}" if conn.forwardto?
+  msg += "\n   Host:  #{conn.remoteDNS}" if conn.remoteDNS?
   
   return console.log " √ #{msg}\n".green if success
   console.error " X #{msg}".red
@@ -39,14 +43,21 @@ server.on 'startData', (conn) ->
   
   conn.forwardto = config.forwardto
   conn.saveStream = new stream.PassThrough()
-  conn.saveStream.write "Received: by #{ip} with SMTP id generated;\r\n"
-  conn.saveStream.write "        #{moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ')} (UTC)\r\n"
-  deliveremail conn.forwardto, conn.from, conn.saveStream, (err, message) ->
-    if !err?
-      display yes, conn
+
+  dns.reverse conn.remoteAddress, (err, domains) ->
+    if !err? and domains.length > 0
+      domain = domains[0]
+      conn.remoteDNS = domain
+      conn.saveStream.write "Received: from #{domain} ([#{conn.remoteAddress}]) by #{hostname} with SMTP id generated;\r\n"
     else
-      display no, conn, err
-    conn.cb err, message
+      conn.saveStream.write "Received: by #{hostname} with SMTP id generated;\r\n"
+    conn.saveStream.write "        #{moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ')} (UTC)\r\n"
+    deliveremail conn.forwardto, conn.from, conn.saveStream, (err, message) ->
+      if !err?
+        display yes, conn
+      else
+        display no, conn, err
+      conn.cb err, message
 
 server.on 'data', (conn, chunk) ->
   return if conn.deny? and conn.deny
