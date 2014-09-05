@@ -1,5 +1,7 @@
 simplesmtp = require 'simplesmtp'
 stream = require 'stream'
+moment = require 'moment'
+os = require 'os'
 require 'colors'
 config = require './config.json'
 deliveremail = require './deliveremail'
@@ -7,8 +9,14 @@ deliveremail = require './deliveremail'
 server = simplesmtp.createServer()
 server.listen 25
 
+ip = '127.0.0.1'
+for name, details of os.networkInterfaces()
+  for detail in details
+    if detail.family is 'IPv4' and !detail.internal
+      ip = detail.address
+
 console.log()
-console.log '   Pokemon Emails listening on port 25'.cyan
+console.log "   Pokemon Emails listening on port 25 at #{ip}".cyan
 console.log()
 
 display = (success, conn, err) ->
@@ -31,6 +39,8 @@ server.on 'startData', (conn) ->
   
   conn.forwardto = config.forwardto
   conn.saveStream = new stream.PassThrough()
+  conn.saveStream.write "Received: by #{ip} with SMTP id generated;\r\n"
+  conn.saveStream.write "        #{moment().format('ddd, DD MMM YYYY HH:mm:ss ZZ')} (UTC)\r\n"
   deliveremail conn.forwardto, conn.from, conn.saveStream, (err, message) ->
     if !err?
       display yes, conn
