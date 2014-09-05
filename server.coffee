@@ -7,6 +7,10 @@ deliveremail = require './deliveremail'
 server = simplesmtp.createServer()
 server.listen 25
 
+console.log()
+console.log '   Pokemon Emails listening on port 25'.cyan
+console.log()
+
 display = (success, conn) ->
   msg = "From:  #{conn.from}\n   To:    #{conn.to}"
   msg += "\n   Proxy: #{conn.forwardto}" if conn.forwardto?

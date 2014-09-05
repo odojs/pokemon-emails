@@ -17,6 +17,12 @@
 
   server.listen(25);
 
+  console.log();
+
+  console.log('   Pokemon Emails listening on port 25'.cyan);
+
+  console.log();
+
   display = function(success, conn) {
     var msg;
     msg = "From:  " + conn.from + "\n   To:    " + conn.to;
