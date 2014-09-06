@@ -3,21 +3,21 @@
   var config, deliveremail, detail, details, display, dns, hostname, ip, moment, name, os, server, simplesmtp, stream, _i, _len, _ref,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  simplesmtp = require('simplesmtp');
-
   stream = require('stream');
 
-  moment = require('moment');
-
   os = require('os');
+
+  dns = require('dns');
+
+  simplesmtp = require('simplesmtp');
+
+  moment = require('moment');
 
   require('colors');
 
   config = require('./config.json');
 
   deliveremail = require('./deliveremail');
-
-  dns = require('dns');
 
   server = simplesmtp.createServer();
 

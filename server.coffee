@@ -1,11 +1,11 @@
-simplesmtp = require 'simplesmtp'
 stream = require 'stream'
-moment = require 'moment'
 os = require 'os'
+dns = require 'dns'
+simplesmtp = require 'simplesmtp'
+moment = require 'moment'
 require 'colors'
 config = require './config.json'
 deliveremail = require './deliveremail'
-dns = require 'dns'
 
 server = simplesmtp.createServer()
 server.listen 25
