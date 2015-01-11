@@ -1,7 +1,7 @@
 {
-  "name": "mmmail",
+  "name": "pokemon-emails",
   "version": "0.0.0",
-  "description": "MM Mail Me",
+  "description": "Catch all emails and forward them.",
   "main": "server.js",
   "dependencies": {
     "colors": "0.6.2",

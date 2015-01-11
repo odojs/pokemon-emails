@@ -66,6 +66,6 @@ server.on 'data', (conn, chunk) ->
 server.on 'dataReady', (conn, cb) ->
   if conn.deny? and conn.deny
     display no, conn, 'proxy denied'
-    return cb new Error 'denied' 
+    return cb new Error 'denied'
   conn.saveStream.end()
   conn.cb = cb
